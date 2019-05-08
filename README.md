@@ -1,10 +1,10 @@
 # `await!` -> `.await`
 
-Migration tool for replacing `await!` macro with `.await` syntax.
+Migration tool for replacing `await!` macro with `await` syntax.
 
 ## Usage
 
-In this example, `replace-await` is cloned in the parent directory of your project, but adjust the path if necessary.
+In this example, `replace-await` is cloned in the parent directory of `your-project-dir`, but adjust the path if necessary.
 
 ```shell
 git clone https://github.com/taiki-e/replace-await.git

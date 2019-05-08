@@ -1,11 +1,13 @@
 # `await!` -> `.await`
 
+Migration tool for replacing `await!` macro with `.await` syntax.
+
 ## Usage
 
 ```shell
 git clone https://github.com/taiki-e/replace-await.git
 cd your-project-dir
-cargo run --manifest-path ../replace-await/Cargo.toml **/*.rs
+cargo run --manifest-path ../replace-await/Cargo.toml **/*.rs  **/*.md
 ```
 
 ## License

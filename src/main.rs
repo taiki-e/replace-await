@@ -21,39 +21,34 @@ fn main() -> io::Result<()> {
 }
 
 fn find(bytes: &mut Vec<u8>) {
-    const MACRO_1: &[u8] = b"await!(";
-    const MACRO_2: &[u8] = b"r#await!(";
-    const FEATURE_1: &[u8] = b", await_macro";
-    const FEATURE_2: &[u8] = b"await_macro, ";
-    const FEATURE_3: &[u8] = b"await_macro";
+    const MACRO: &[&[u8]] = &[b"await!(", b"r#await!("];
+    const FEATURE: &[&[u8]] = &[b", await_macro", b"await_macro, ", b"await_macro"];
 
     let mut i = 0;
     while i < bytes.len() {
-        if (&bytes[i..]).starts_with(MACRO_1) {
-            (0..MACRO_1.len()).for_each(|_| drop(bytes.remove(i)));
+        if remove(bytes, i, MACRO) {
             replace(bytes, i);
-            continue;
-        } else if (&bytes[i..]).starts_with(MACRO_2) {
-            (0..MACRO_2.len()).for_each(|_| drop(bytes.remove(i)));
-            replace(bytes, i);
-            continue;
+        } else {
+            let _ = remove(bytes, i, FEATURE);
+            i += 1;
         }
-        if (&bytes[i..]).starts_with(FEATURE_1) {
-            (0..FEATURE_1.len()).for_each(|_| drop(bytes.remove(i)));
-        } else if (&bytes[i..]).starts_with(FEATURE_2) {
-            (0..FEATURE_2.len()).for_each(|_| drop(bytes.remove(i)));
-        } else if (&bytes[i..]).starts_with(FEATURE_3) {
-            (0..FEATURE_3.len()).for_each(|_| drop(bytes.remove(i)));
-        }
-        i += 1;
     }
 }
 
-fn replace(bytes: &mut Vec<u8>, offset: usize) {
+fn remove(bytes: &mut Vec<u8>, i: usize, needles: &[&[u8]]) -> bool {
+    for needle in needles {
+        if (&bytes[i..]).starts_with(needle) {
+            (0..needle.len()).for_each(|_| drop(bytes.remove(i)));
+            return true;
+        }
+    }
+    false
+}
+
+fn replace(bytes: &mut Vec<u8>, mut i: usize) {
     const AWAIT: &[u8] = b".await";
 
     let mut count = 0;
-    let mut i = offset;
     while i < bytes.len() {
         match bytes[i] {
             b'(' => count += 1,

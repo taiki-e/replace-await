@@ -9,8 +9,10 @@ In this example, `replace-await` is cloned in the parent directory of `your-proj
 ```shell
 git clone https://github.com/taiki-e/replace-await.git
 cd your-project-dir
-cargo run --manifest-path ../replace-await/Cargo.toml **/*.rs  **/*.md
+cargo run --release --manifest-path ../replace-await/Cargo.toml **/*.rs **/*.md
 ```
+
+See [rust-lang-nursery/futures-rs#1583](https://github.com/rust-lang-nursery/futures-rs/pull/1583) for the conversion that this tool did.
 
 ## License
 

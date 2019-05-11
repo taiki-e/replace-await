@@ -38,7 +38,7 @@ fn find(bytes: &mut Vec<u8>) {
 fn remove(bytes: &mut Vec<u8>, i: usize, needles: &[&[u8]]) -> bool {
     for needle in needles {
         if (&bytes[i..]).starts_with(needle) {
-            (0..needle.len()).for_each(|_| drop(bytes.remove(i)));
+            bytes.drain(i..i + needle.len());
             return true;
         }
     }
@@ -54,8 +54,7 @@ fn replace(bytes: &mut Vec<u8>, mut i: usize) {
             b'(' => count += 1,
             b')' => {
                 if count == 0 {
-                    bytes.remove(i);
-                    AWAIT.iter().enumerate().for_each(|(j, &c)| bytes.insert(i + j, c));
+                    bytes.splice(i..=i, AWAIT.iter().cloned());
                     return;
                 } else {
                     count -= 1;
@@ -64,5 +63,17 @@ fn replace(bytes: &mut Vec<u8>, mut i: usize) {
             _ => {}
         }
         i += 1;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test() {
+        let mut buf = b"await!(foo(await!(bar)))".to_vec();
+        find(&mut buf);
+        assert_eq!(&buf, b"foo(bar.await).await");
     }
 }

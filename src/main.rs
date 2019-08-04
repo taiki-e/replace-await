@@ -1,3 +1,7 @@
+#![warn(unsafe_code)]
+#![warn(rust_2018_idioms, unreachable_pub, single_use_lifetimes)]
+#![warn(clippy::all, clippy::pedantic)]
+
 use std::{
     fs::{self, File},
     io::{self, BufReader, Read},
@@ -71,7 +75,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test() {
+    fn test_await() {
         let mut buf = b"await!(foo(await!(bar)))".to_vec();
         find(&mut buf);
         assert_eq!(&buf, b"foo(bar.await).await");

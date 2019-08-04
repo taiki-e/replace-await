@@ -1,0 +1,25 @@
+trigger:
+- master
+- staging
+- trying
+
+variables:
+  RUSTFLAGS: -Dwarnings
+
+jobs:
+- template: ci/azure-test.yml
+  parameters:
+    name: nightly
+    rust: nightly
+    cmd: test
+    cross: true
+
+- template: ci/azure-clippy.yml
+  parameters:
+    name: clippy
+    rust: nightly
+
+- template: ci/azure-rustfmt.yml
+  parameters:
+    name: rustfmt
+    rust: stable

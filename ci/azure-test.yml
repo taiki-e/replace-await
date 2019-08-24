@@ -1,14 +1,12 @@
 parameters:
-  cmd: check
+  cmd: test
 
 jobs:
 - job: ${{ parameters.name }}
-  displayName: ${{ parameters.displayName }} ${{ parameters.rust }}
   strategy:
     matrix:
       Linux:
         vmImage: ubuntu-16.04
-
       ${{ if parameters.cross }}:
         MacOS:
           vmImage: macOS-10.13
@@ -20,7 +18,7 @@ jobs:
   steps:
     - template: azure-install-rust.yml
       parameters:
-        rust: ${{ parameters.rust }}
+        toolchain: ${{ parameters.toolchain }}
 
     - script: cargo ${{ parameters.cmd }}
       displayName: cargo ${{ parameters.cmd }}

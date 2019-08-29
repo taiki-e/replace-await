@@ -12,7 +12,14 @@ use std::env::args_os;
 #[cfg(windows)]
 use wild::args_os;
 
-fn main() -> io::Result<()> {
+fn main() {
+    if let Err(e) = try_main() {
+        eprintln!("{}", e);
+        std::process::exit(1)
+    }
+}
+
+fn try_main() -> io::Result<()> {
     let mut buf = Vec::new();
     args_os().skip(1).try_for_each(|file| {
         let mut r = BufReader::new(File::open(&file)?);

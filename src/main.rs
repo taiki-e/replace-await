@@ -1,5 +1,5 @@
 #![warn(unsafe_code)]
-#![warn(rust_2018_idioms, unreachable_pub, single_use_lifetimes)]
+#![warn(rust_2018_idioms, single_use_lifetimes, unreachable_pub)]
 #![warn(clippy::all, clippy::pedantic)]
 
 use std::{

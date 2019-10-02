@@ -1,10 +1,5 @@
 # `await!` -> `.await`
 
-[![Build Status][azure-badge]][azure-url]
-
-[azure-badge]: https://dev.azure.com/taiki-e/taiki-e/_apis/build/status/taiki-e.replace-await?branchName=master
-[azure-url]: https://dev.azure.com/taiki-e/taiki-e/_build/latest?definitionId=14&branchName=master
-
 Migration tool for replacing `await!` macro with `await` syntax.
 
 ## Usage

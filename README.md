@@ -1,10 +1,5 @@
 # `await!` -> `.await`
 
-[![ci-badge]][ci-url]
-
-[ci-badge]: https://github.com/taiki-e/replace-await/workflows/ci/badge.svg
-[ci-url]: https://github.com/taiki-e/replace-await/actions?workflow=ci
-
 Migration tool for replacing `await!` macro with `await` syntax.
 
 ## Usage

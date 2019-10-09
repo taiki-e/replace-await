@@ -17,7 +17,6 @@ jobs:
     env:
       RUSTFLAGS: -Dwarnings
     strategy:
-      fail-fast: false
       matrix:
         os:
           - ubuntu-latest
@@ -60,7 +59,7 @@ jobs:
         run: |
           set -e
           rustup update nightly && rustup default nightly
-      - name: Install ${{ matrix.component }}
+      - name: Install component
         run: |
           set +e
           if rustup component add ${{ matrix.component }}; then
@@ -80,10 +79,8 @@ jobs:
       - name: cargo clippy
         if: matrix.component == 'clippy'
         run: |
-          cargo clippy -V
           cargo clippy --all --all-features
       - name: cargo fmt -- --check
         if: matrix.component == 'rustfmt'
         run: |
-          rustfmt -V
           cargo fmt --all -- --check

@@ -1,6 +1,6 @@
 #![forbid(unsafe_code)]
 #![warn(rust_2018_idioms, single_use_lifetimes, unreachable_pub)]
-#![warn(clippy::all, clippy::pedantic)]
+#![warn(clippy::all)]
 
 use std::{
     fs::{self, File},

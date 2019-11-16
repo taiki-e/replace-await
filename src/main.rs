@@ -48,7 +48,7 @@ fn find(bytes: &mut Vec<u8>) {
 
 fn remove(bytes: &mut Vec<u8>, i: usize, needles: &[&[u8]]) -> bool {
     for needle in needles {
-        if (&bytes[i..]).starts_with(needle) {
+        if bytes[i..].starts_with(needle) {
             bytes.drain(i..i + needle.len());
             return true;
         }

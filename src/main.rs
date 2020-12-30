@@ -1,12 +1,9 @@
 #![forbid(unsafe_code)]
-#![warn(rust_2018_idioms, single_use_lifetimes, unreachable_pub)]
-#![warn(clippy::all)]
-// mem::take requires Rust 1.40
-#![allow(clippy::mem_replace_with_default)]
+#![warn(rust_2018_idioms, single_use_lifetimes)]
 
 use std::{
     fs::{self, File},
-    io::{self, BufReader, Read},
+    io::{BufReader, Read},
 };
 
 #[cfg(not(windows))]
@@ -14,14 +11,9 @@ use std::env::args_os;
 #[cfg(windows)]
 use wild::args_os;
 
-fn main() {
-    if let Err(e) = try_main() {
-        eprintln!("{}", e);
-        std::process::exit(1)
-    }
-}
+type Result<T, E = anyhow::Error> = std::result::Result<T, E>;
 
-fn try_main() -> io::Result<()> {
+fn main() -> Result<()> {
     let mut buf = Vec::new();
     args_os().skip(1).try_for_each(|file| {
         let mut r = BufReader::new(File::open(&file)?);
@@ -36,11 +28,12 @@ fn try_main() -> io::Result<()> {
 fn find(bytes: &mut Vec<u8>) {
     const MACRO: &[&[u8]] = &[b"await!(", b"r#await!("];
     const FEATURE: &[&[u8]] = &[b", await_macro", b"await_macro, ", b"await_macro"];
+    const WITH: &[u8] = b".await";
 
     let mut i = 0;
     while i < bytes.len() {
         if remove(bytes, i, MACRO) {
-            replace(bytes, i);
+            replace(bytes, i, WITH);
         } else {
             let _ = remove(bytes, i, FEATURE);
             i += 1;
@@ -58,16 +51,14 @@ fn remove(bytes: &mut Vec<u8>, i: usize, needles: &[&[u8]]) -> bool {
     false
 }
 
-fn replace(bytes: &mut Vec<u8>, mut i: usize) {
-    const AWAIT: &[u8] = b".await";
-
+fn replace(bytes: &mut Vec<u8>, mut i: usize, with: &[u8]) {
     let mut count = 0;
     while i < bytes.len() {
         match bytes[i] {
             b'(' => count += 1,
             b')' => {
                 if count == 0 {
-                    bytes.splice(i..=i, AWAIT.iter().cloned());
+                    bytes.splice(i..=i, with.iter().cloned());
                     return;
                 } else {
                     count -= 1;

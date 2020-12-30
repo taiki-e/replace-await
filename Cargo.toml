@@ -9,5 +9,8 @@ publish = false
 
 [workspace]
 
+[dependencies]
+anyhow = "1"
+
 [target.'cfg(windows)'.dependencies]
-wild = "2.0.1"
+wild = "2"

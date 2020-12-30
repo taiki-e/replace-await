@@ -1,4 +1,4 @@
-name: ci
+name: CI
 
 on:
   pull_request:
@@ -6,60 +6,69 @@ on:
     branches:
       - master
       - staging
-      - trying
   schedule:
-    - cron: '00 01 * * *'
+    - cron: '0 1 * * *'
 
 env:
-  RUSTFLAGS: -Dwarnings
+  CARGO_INCREMENTAL: 0
+  RUSTFLAGS: -D warnings
+  RUST_BACKTRACE: 1
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   test:
-    name: test
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
-        rust:
-          - stable
-          - nightly
+        include:
+          - rust: stable
+          - rust: nightly
+          - rust: nightly
+            os: macos-latest
+          - rust: nightly
+            os: windows-latest
+    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
     steps:
-      - uses: actions/checkout@master
-      - name: Install Rust
-        shell: bash
-        run: |
-          . ./ci/install-rust.sh ${{ matrix.rust }}
-      - name: cargo test
-        run: |
-          cargo test
+      - uses: actions/checkout@v2
+      - uses: taiki-e/github-actions/install-rust@main
+        with:
+          toolchain: ${{ matrix.rust }}
+      - run: cargo test
 
-  style:
-    name: style
+  clippy:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        component:
-          - clippy
-          - rustfmt
     steps:
-      - uses: actions/checkout@master
-      - name: Install Rust
-        shell: bash
-        run: |
-          . ./ci/install-rust.sh
-      - name: Install component
-        shell: bash
-        run: |
-          . ./ci/install-component.sh ${{ matrix.component }}
-      - name: cargo clippy
-        if: matrix.component == 'clippy'
-        run: |
-          cargo clippy --all --all-features --all-targets
-      - name: cargo fmt -- --check
-        if: matrix.component == 'rustfmt'
-        run: |
-          cargo fmt --all -- --check
+      - uses: actions/checkout@v2
+      - uses: taiki-e/github-actions/install-rust@main
+        with:
+          component: clippy
+      - run: cargo clippy --all --all-features --all-targets
+
+  rustfmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: taiki-e/github-actions/install-rust@main
+        with:
+          component: rustfmt
+      - run: cargo fmt --all -- --check
+
+  # This job doesn't actually test anything, but they're used to tell bors the
+  # build completed, as there is no practical way to detect when a workflow is
+  # successful listening to webhooks only.
+  #
+  # ALL THE PREVIOUS JOBS NEEDS TO BE ADDED TO THE `needs` SECTION OF THIS JOB!
+
+  ci-success:
+    name: ci
+    if: github.event_name == 'push' && success()
+    needs:
+      - test
+      - clippy
+      - rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark the job as a success
+        run: exit 0

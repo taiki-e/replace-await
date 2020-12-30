@@ -26,16 +26,14 @@ fn main() -> Result<()> {
 }
 
 fn find(bytes: &mut Vec<u8>) {
-    const MACRO: &[&[u8]] = &[b"await!(", b"r#await!("];
-    const FEATURE: &[&[u8]] = &[b", await_macro", b"await_macro, ", b"await_macro"];
-    const WITH: &[u8] = b".await";
+    const MACRO: &[&[u8]] = &[b"try!(", b"r#try!("];
+    const WITH: &[u8] = b"?";
 
     let mut i = 0;
     while i < bytes.len() {
         if remove(bytes, i, MACRO) {
             replace(bytes, i, WITH);
         } else {
-            let _ = remove(bytes, i, FEATURE);
             i += 1;
         }
     }
@@ -75,9 +73,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_await() {
-        let mut buf = b"await!(foo(await!(bar)))".to_vec();
+    fn test_try() {
+        let mut buf = b"try!(foo(try!(bar)))".to_vec();
         find(&mut buf);
-        assert_eq!(&buf, b"foo(bar.await).await");
+        assert_eq!(&buf, b"foo(bar?)?");
     }
 }
